@@ -20,8 +20,8 @@
 <body>
 
 <header class="fade-in">
-  <h1>Woah There! Just To Verify</h1>
-  <p>Hey slow down, this website is potentially malicious. Proceed at your own risk.</p>
+  <h1>Malicious Site Warning</h1>
+  <p>This website may harm your system. Proceed at your own risk.</p>
   <button class="btn" onclick="proceed()">Proceed Anyway</button>
 </header>
 
@@ -32,8 +32,12 @@ function getQueryParam(param) {
 }
 
 function proceed() {
-  const target = getQueryParam('redirect') || 'main.html'; // default fallback
-  window.location.href = target;
+  const target = getQueryParam('target');
+  if (target) {
+    window.location.href = decodeURIComponent(target);
+  } else {
+    alert("Original URL not found!");
+  }
 }
 </script>
 
