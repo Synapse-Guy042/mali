@@ -9,8 +9,7 @@
     font-family: "Segoe UI", sans-serif;
     background: linear-gradient(135deg, #0e0f12, #1a1b1f);
     color: #e6eef6;
-    display: flex;
-    flex-direction: column;
+    display: flex; flex-direction: column;
     align-items: center;
     min-height: 100vh;
     overflow-x: hidden;
@@ -18,8 +17,7 @@
   }
   body::before {
     content: '';
-    position: absolute;
-    top: -50%; left: -50%;
+    position: absolute; top: -50%; left: -50%;
     width: 200%; height: 200%;
     background: radial-gradient(circle, rgba(255,255,255,0.02) 1px, transparent 1px);
     background-size: 50px 50px;
@@ -29,26 +27,18 @@
   @keyframes moveBackground { from {transform: translate(0,0);} to {transform: translate(50px,50px);} }
   header { padding: 80px 20px 100px; text-align: center; position: relative; z-index: 1; }
   header h1 {
-    font-size: 3rem;
-    margin-bottom: 15px;
+    font-size: 3rem; margin-bottom: 15px;
     background: linear-gradient(90deg, #08f, #f39c12, #08f);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     animation: gradientText 5s infinite linear;
   }
   @keyframes gradientText { 0% {background-position: 0%;} 100% {background-position: 200%;} }
   header p { font-size: 1.3rem; color: #aaa; margin-top: 15px; opacity: 0; animation: fadeInUp 1s forwards 0.5s; }
   @keyframes fadeInUp { to {opacity: 1; transform: translateY(0);} }
   .btn {
-    margin-top: 20px;
-    padding: 10px 25px;
-    font-size: 1rem;
-    font-weight: bold;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    background: linear-gradient(90deg, #08f, #f39c12);
-    color: #fff;
+    margin-top: 20px; padding: 10px 25px; font-size: 1rem; font-weight: bold;
+    border: none; border-radius: 10px; cursor: pointer;
+    background: linear-gradient(90deg, #08f, #f39c12); color: #fff;
     transition: transform 0.2s, box-shadow 0.2s;
   }
   .btn:hover { transform: translateY(-3px); box-shadow: 0 0 25px rgba(243,156,18,0.7); }
@@ -56,27 +46,31 @@
 </head>
 <body>
 
-<header class="fade-in">
+<header>
   <h1>Malicious Site Warning</h1>
   <p>This website may harm your system. Proceed at your own risk.</p>
-  <button class="btn" onclick="proceed()">Proceed Anyway</button>
+  <button class="btn" id="maliciousBtn">Proceed Anyway</button>
 </header>
 
 <script>
+const { ipcRenderer } = require('electron');
+
 function getQueryParam(param) {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(param);
+  return new URLSearchParams(window.location.search).get(param);
 }
 
-function proceed() {
-  const target = getQueryParam('target');
+const target = getQueryParam('target');
+
+document.getElementById('maliciousBtn').addEventListener('click', () => {
   if (target) {
+    ipcRenderer.send('bypass-malicious-warning'); // Save bypass in main
     window.location.href = decodeURIComponent(target);
   } else {
     alert("Original URL not found!");
   }
-}
+});
 </script>
 
 </body>
 </html>
+
