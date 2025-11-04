@@ -2,19 +2,27 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Malicious Site Blocked</title>
+<title>Malicious Site Warning</title>
 <style>
-  body { font-family: "Segoe UI", sans-serif; background: #1a1b1f; color: #e6eef6; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
-  h1 { font-size: 2.5rem; margin-bottom: 1rem; }
-  p { margin-bottom: 2rem; }
-  .btn { padding: 10px 25px; font-size: 1rem; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; background: #f39c12; color: #fff; }
+  /* Reuse the same styles as age.html */
+  body { font-family: "Segoe UI", sans-serif; background: linear-gradient(135deg,#0e0f12,#1a1b1f); color: #e6eef6; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; position: relative; }
+  body::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 50px 50px; animation: moveBackground 30s linear infinite; z-index: 0; }
+  @keyframes moveBackground { from {transform: translate(0,0);} to {transform: translate(50px,50px);} }
+  header { padding: 80px 20px 100px; text-align: center; position: relative; z-index: 1; }
+  header h1 { font-size: 3rem; margin-bottom: 15px; background: linear-gradient(90deg,#08f,#f39c12,#08f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: gradientText 5s infinite linear; }
+  @keyframes gradientText { 0% {background-position: 0%;} 100% {background-position: 200%;} }
+  header p { font-size: 1.3rem; color: #aaa; margin-top: 15px; opacity: 0; animation: fadeInUp 1s forwards 0.5s; }
+  @keyframes fadeInUp { to {opacity: 1; transform: translateY(0);} }
+  .btn { margin-top: 20px; padding: 10px 25px; font-size: 1rem; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; background: linear-gradient(90deg,#08f,#f39c12); color: #fff; transition: transform 0.2s, box-shadow 0.2s; }
+  .btn:hover { transform: translateY(-3px); box-shadow: 0 0 25px rgba(243,156,18,0.7); }
 </style>
 </head>
 <body>
-
-<h1>Malicious Site Blocked</h1>
-<p>This site may be harmful. Proceed with caution.</p>
-<button class="btn" id="proceedBtn">Proceed Anyway</button>
+<header>
+  <h1>Malicious Site Blocked</h1>
+  <p>This site is potentially harmful.</p>
+  <button class="btn" id="proceedBtn">Proceed Anyway</button>
+</header>
 
 <script>
 const { ipcRenderer } = require('electron');
@@ -27,17 +35,12 @@ const target = getQueryParam('target');
 
 document.getElementById('proceedBtn').addEventListener('click', () => {
   if (target) {
-    ipcRenderer.send('bypass-malicious-warning');
-    try {
-      window.location.href = decodeURIComponent(target);
-    } catch {
-      alert('Cannot redirect to the original page.');
-    }
+    ipcRenderer.send('bypass-malicious-warning'); // Save bypass
+    ipcRenderer.send('redirect-to-url', decodeURIComponent(target)); // Safe redirect
   } else {
     alert("Original URL not found!");
   }
 });
 </script>
-
 </body>
 </html>
